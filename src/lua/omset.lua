@@ -93,7 +93,7 @@ end
 
 local prefix = table.remove(KEYS, 1)
 
-if KEYS[1] == '' then
+if KEYS[1] == nil then
     oset(prefix, ARGV[1])
 else
     for i, key in ipairs(KEYS) do

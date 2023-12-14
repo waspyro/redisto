@@ -1,5 +1,5 @@
 import Redis, {RedisOptions} from "ioredis";
-import {notEmpty, objectToKVarray, transformArrayToObject} from "./supplemental/utils";
+import {objectToKVarray, transformArrayToObject} from "./supplemental/utils";
 import cmdloader from "./supplemental/cmdloader";
 
 export default class Redisto {
@@ -9,10 +9,15 @@ export default class Redisto {
     public readonly prefix: string = '@'
   ) {}
 
-  set = (...args: [...string[], any]): Promise<number> => {
-    const value = args.pop()
+  key = (relativeKey: string) => {
+    if(relativeKey.length === 0) return this.prefix
+    return this.prefix + ':' + relativeKey
+  }
 
-    const keys = [this.prefix + notEmpty(args)]
+  set = (path: string|any, value?: any): Promise<number> => {
+    if(value === undefined) (value = path, path = this.prefix)
+    else path = this.key(path)
+    const keys = [path]
     const values = []
     if(typeof value !== 'object' || value === null)
       values.push(JSON.stringify(value))
@@ -21,16 +26,20 @@ export default class Redisto {
     return this.client.omset(keys.length, keys, values)
   }
 
-  get = (...args: string[]): Promise<any> => {
-    const path = this.prefix + notEmpty(args)
-    return this.client.oget(path).then(res => {
-      if(!Array.isArray(res)) return JSON.parse(res)
-      return transformArrayToObject(res)
+  oget = (key: string = '', assignTo = {}): Promise<Object> => {
+    return this.client.oget(this.key(key)).then(res => {
+      if(!Array.isArray(res)) throw new Error('unexpected response')
+      return transformArrayToObject(res, assignTo)
     })
   }
 
+  get = (key: string = '') => {
+    return this.client.get(this.key(key))
+      .then(JSON.parse)
+  }
+
   col = (...args: string[]): Redisto => {
-    return new Redisto(this.client, this.prefix + notEmpty(args))
+    return new Redisto(this.client, this.key(args.join(':')))
   }
 
   static init = (opts: RedisOptions & {route?: string} = {}) => {

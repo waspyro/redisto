@@ -10,6 +10,6 @@ export declare module "ioredis" {
     oget(
       key: string,
       callback?: Callback<string>
-    ): Result<string | [string[], string[]], Context>;
+    ): Result<[string[], string[]], Context>;
   }
 }

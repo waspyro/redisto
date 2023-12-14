@@ -1,21 +1,14 @@
-export const notEmpty = (args) => {
-  args = args.filter(Boolean)
-  return args.length ? ':' + args.join(':') : ''
-}
-
-export const transformArrayToObject = ([keys, values]) => {
-  const obj = {}
+export const transformArrayToObject = ([keys, values], obj: Object) => {
   for(let i = 0; i < keys.length; i++) {
     const parts = keys[i].split(':')
     let ref = obj
     let j = 0
     for(; j < parts.length-1; j++) {
-      if(!ref[parts[j]]) ref[parts[j]] = {}
+      if(typeof ref[parts[j]] !== "object")
+        ref[parts[j]] = {}
       ref = ref[parts[j]]
     }
-
-    if(!values[i]) ref[parts[j]] = null
-    else ref[parts[j]] = JSON.parse(values[i])
+    ref[parts[j]] = JSON.parse(values[i])
   }
   return obj;
 }
