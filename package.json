@@ -1,0 +1,19 @@
+{
+  "name": "redisto",
+  "version": "0.0.1",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "prepare": "rm -rf dist && tsc --outDir dist && cp -r ./src/lua ./dist/lua",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "waspyro",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.10.4"
+  },
+  "dependencies": {
+    "ioredis": "^5.3.2"
+  }
+}
