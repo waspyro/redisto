@@ -11,9 +11,5 @@ export declare module "ioredis" {
       key: string,
       callback?: Callback<string>
     ): Result<string | [string[], string[]], Context>;
-    odel(
-      key: string,
-      callback?: Callback<string>
-    ): Result<string, Context>;
   }
 }
